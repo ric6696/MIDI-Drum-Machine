@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -19,8 +19,8 @@
           <div class="eyebrow">MIDI Lab Project M2</div>
           <h1>Web Drum Machine</h1>
           <p class="subtitle">
-            Build patterns on a 16-step grid, swap instruments, and play back with tight
-            timing using a MIDI drum soundfont.
+            Build patterns on a 16-step grid, swap instruments, and play back
+            with tight timing using a MIDI drum soundfont.
           </p>
         </div>
         <div class="status">
@@ -43,6 +43,7 @@
         <div class="panel">
           <div class="panel-title">Tempo</div>
           <div class="slider-row">
+            <label class="slider-label" for="tempo">Tempo</label>
             <input id="tempo" type="range" min="60" max="180" value="110" />
             <div class="slider-value"><span id="tempoValue">110</span> bpm</div>
           </div>
@@ -66,11 +67,20 @@
           <div class="panel-title">Master</div>
           <div class="slider-row">
             <label class="slider-label" for="masterVolume">Volume</label>
-            <input id="masterVolume" type="range" min="0" max="100" value="80" />
-            <div class="slider-value"><span id="masterVolumeValue">80</span>%</div>
+            <input
+              id="masterVolume"
+              type="range"
+              min="0"
+              max="100"
+              value="80"
+            />
+            <div class="slider-value">
+              <span id="masterVolumeValue">80</span>%
+            </div>
           </div>
           <div class="panel-note">
-            Click any control to unlock audio. Soundfont is loaded via WebAudioFont.
+            Click any control to unlock audio. Soundfont is loaded via
+            WebAudioFont.
           </div>
         </div>
       </section>
@@ -85,7 +95,8 @@
       </section>
 
       <footer class="footer">
-        Tip: Change the instrument for each row to map different MIDI drum notes.
+        Tip: Change the instrument for each row to map different MIDI drum
+        notes.
       </footer>
     </div>
 
