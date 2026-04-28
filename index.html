@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIDI Lab M2 Drum Machine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div>
+          <div class="eyebrow">MIDI Lab Project M2</div>
+          <h1>Web Drum Machine</h1>
+          <p class="subtitle">
+            Build patterns on a 16-step grid, swap instruments, and play back with tight
+            timing using a MIDI drum soundfont.
+          </p>
+        </div>
+        <div class="status">
+          <div class="status-pill" id="audioStatus">Audio: Locked</div>
+          <div class="status-pill" id="patternStatus">Pattern: 1</div>
+        </div>
+      </header>
+
+      <section class="controls">
+        <div class="panel">
+          <div class="panel-title">Transport</div>
+          <div class="transport">
+            <button id="playBtn" class="primary">Play</button>
+            <button id="stopBtn">Stop</button>
+            <button id="clearBtn">Clear</button>
+            <button id="randomBtn">Random</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Tempo</div>
+          <div class="slider-row">
+            <input id="tempo" type="range" min="60" max="180" value="110" />
+            <div class="slider-value"><span id="tempoValue">110</span> bpm</div>
+          </div>
+          <div class="slider-row">
+            <label class="slider-label" for="swing">Swing</label>
+            <input id="swing" type="range" min="0" max="60" value="0" />
+            <div class="slider-value"><span id="swingValue">0</span>%</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Patterns</div>
+          <div class="pattern-bank" id="patternBank"></div>
+          <div class="pattern-actions">
+            <button id="saveBtn">Save</button>
+            <button id="loadBtn">Load</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Master</div>
+          <div class="slider-row">
+            <label class="slider-label" for="masterVolume">Volume</label>
+            <input id="masterVolume" type="range" min="0" max="100" value="80" />
+            <div class="slider-value"><span id="masterVolumeValue">80</span>%</div>
+          </div>
+          <div class="panel-note">
+            Click any control to unlock audio. Soundfont is loaded via WebAudioFont.
+          </div>
+        </div>
+      </section>
+
+      <section class="sequencer">
+        <div class="grid-header">
+          <div class="label-spacer">Instrument</div>
+          <div class="steps" id="stepLabels"></div>
+          <div class="label-spacer">Level</div>
+        </div>
+        <div id="grid"></div>
+      </section>
+
+      <footer class="footer">
+        Tip: Change the instrument for each row to map different MIDI drum notes.
+      </footer>
+    </div>
+
+    <script src="https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
