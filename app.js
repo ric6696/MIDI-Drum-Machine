@@ -64,7 +64,9 @@ const dom = {
 
 let audioContext;
 let player;
-let drumPreset = null;
+let soundfontMap = null;
+const soundfontBuffers = new Map();
+let soundfontIndex = [];
 let schedulerTimer = null;
 let currentStep = 0;
 let nextNoteTime = 0;
@@ -75,6 +77,70 @@ function resolveGlobalPath(path) {
   return path
     .split(".")
     .reduce((value, key) => (value ? value[key] : undefined), window);
+}
+
+function noteNameToMidi(noteName) {
+  const match = /^([A-Ga-g])([#b]?)(-?\d+)$/.exec(noteName);
+  if (!match) {
+    return null;
+  }
+  const letter = match[1].toUpperCase();
+  const accidental = match[2];
+  const octave = Number(match[3]);
+  const baseMap = {
+    C: 0,
+    D: 2,
+    E: 4,
+    F: 5,
+    G: 7,
+    A: 9,
+    B: 11,
+  };
+  let semitone = baseMap[letter];
+  if (accidental === "#") {
+    semitone += 1;
+  } else if (accidental === "b") {
+    semitone -= 1;
+  }
+  return (octave + 1) * 12 + semitone;
+}
+
+function buildSoundfontIndex(map) {
+  return Object.keys(map)
+    .map((name) => ({ name, midi: noteNameToMidi(name) }))
+    .filter((entry) => entry.midi !== null)
+    .sort((a, b) => a.midi - b.midi);
+}
+
+function findClosestSampleName(midi) {
+  if (!soundfontIndex.length) {
+    return null;
+  }
+  let closest = soundfontIndex[0];
+  let smallestDiff = Math.abs(closest.midi - midi);
+  for (let i = 1; i < soundfontIndex.length; i += 1) {
+    const entry = soundfontIndex[i];
+    const diff = Math.abs(entry.midi - midi);
+    if (diff < smallestDiff) {
+      closest = entry;
+      smallestDiff = diff;
+    }
+  }
+  return closest.name;
+}
+
+function getSoundfontBuffer(sampleName) {
+  if (!soundfontMap || !soundfontMap[sampleName]) {
+    return null;
+  }
+  if (!soundfontBuffers.has(sampleName)) {
+    const dataUri = soundfontMap[sampleName];
+    const loadPromise = fetch(dataUri)
+      .then((response) => response.arrayBuffer())
+      .then((buffer) => audioContext.decodeAudioData(buffer));
+    soundfontBuffers.set(sampleName, loadPromise);
+  }
+  return soundfontBuffers.get(sampleName);
 }
 
 function createEmptyPattern() {
@@ -268,8 +334,9 @@ function loadSoundfont() {
   script.onload = () => {
     const preset = resolveGlobalPath(SOUND_FONT_VARIABLE);
     if (preset) {
-      drumPreset = preset;
-      player.loader.decodeAfterLoading(audioContext, drumPreset);
+      soundfontMap = preset;
+      soundfontBuffers.clear();
+      soundfontIndex = buildSoundfontIndex(soundfontMap);
       dom.audioStatus.textContent = "Audio: Soundfont Loaded";
       return;
     }
@@ -301,17 +368,23 @@ function scheduleStep(stepIndex, time) {
 }
 
 function playNote(midi, volume, time) {
-  if (drumPreset) {
-    player.queueWaveTable(
-      audioContext,
-      audioContext.destination,
-      drumPreset,
-      time,
-      midi,
-      0.5,
-      volume,
-    );
-    return;
+  if (soundfontMap) {
+    const sampleName = findClosestSampleName(midi);
+    const bufferPromise = sampleName ? getSoundfontBuffer(sampleName) : null;
+    if (bufferPromise) {
+      bufferPromise
+        .then((buffer) => {
+          const source = audioContext.createBufferSource();
+          const gain = audioContext.createGain();
+          source.buffer = buffer;
+          gain.gain.value = volume;
+          source.connect(gain);
+          gain.connect(audioContext.destination);
+          source.start(Math.max(audioContext.currentTime, time));
+        })
+        .catch(() => {});
+      return;
+    }
   }
   const osc = audioContext.createOscillator();
   const gain = audioContext.createGain();
