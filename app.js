@@ -2,8 +2,8 @@ const STEPS = 16;
 const PATTERN_SLOTS = 4;
 const STORAGE_KEY = "m2-drum-pattern";
 
-const SOUND_FONT_URL = "./drum-soundfont.js";
-const SOUND_FONT_VARIABLE = "DRUM_SOUNDFONT";
+const SOUND_FONT_URL = "./drum_font/drum-mp3.js";
+const SOUND_FONT_VARIABLE = "MIDI.Soundfont.acoustic_grand_piano";
 
 const INSTRUMENT_OPTIONS = [
   { name: "Kick 1", midi: 36 },
@@ -70,6 +70,12 @@ let currentStep = 0;
 let nextNoteTime = 0;
 
 const gridCells = [];
+
+function resolveGlobalPath(path) {
+  return path
+    .split(".")
+    .reduce((value, key) => (value ? value[key] : undefined), window);
+}
 
 function createEmptyPattern() {
   return {
@@ -260,7 +266,7 @@ function loadSoundfont() {
   const script = document.createElement("script");
   script.src = SOUND_FONT_URL;
   script.onload = () => {
-    const preset = window[SOUND_FONT_VARIABLE];
+    const preset = resolveGlobalPath(SOUND_FONT_VARIABLE);
     if (preset) {
       drumPreset = preset;
       player.loader.decodeAfterLoading(audioContext, drumPreset);
