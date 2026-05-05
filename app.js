@@ -322,7 +322,12 @@ function unlockAudio() {
     return;
   }
   audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  player = new WebAudioFontPlayer();
+  // WebAudioFontPlayer is optional — only instantiate if the library is present.
+  if (typeof WebAudioFontPlayer !== "undefined") {
+    player = new WebAudioFontPlayer();
+  } else {
+    player = null;
+  }
   state.audioReady = true;
   dom.audioStatus.textContent = "Audio: Ready";
   loadSoundfont();
