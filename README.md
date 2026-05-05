@@ -22,9 +22,7 @@ A web-based drum machine built with HTML, CSS, and JavaScript. It provides a 16-
 2. Click anywhere on the page to unlock audio.
 3. Toggle cells to build a pattern and press Play.
 
-## Soundfont Setup [This Has to be Fixed]
-
-This project expects a WebAudioFont JS soundfont file.
+## Soundfont Setup
 
 1. Place your soundfont file in the project root.
 2. Update these constants in app.js:
